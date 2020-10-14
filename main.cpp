@@ -58,7 +58,7 @@ int main(int argc, char * argv[])
 {
     string symbol;
     int trow, tcol, step, scol;
-    ifstream inFile("test1.txt");
+    ifstream inFile("mytest.txt");
     //int count = 2;
     if(inFile.is_open())
     {
@@ -257,14 +257,6 @@ Block::Block(string symbol)
         row = 2;
         column = 2;
     }
-    /*for(int i=0; i<4; i++)
-    {
-        for(int j=0;j<4;j++)
-        {
-            cout << block[i][j] << " ";
-        }
-        cout << endl;
-    }*/
 }
 
 void Matrix::insertBlock(Block gameBlock, int scol, int step)
@@ -281,6 +273,8 @@ void Matrix::insertBlock(Block gameBlock, int scol, int step)
         isMoved = true;
     }
     second_drop:;
+    reachBottom = false;
+    collision = false;
     for(int i = 0; i < trow; i++) {
         for(int j = 0; j < tcol; j++) {
             new_matrix[i][j] = matrix[i][j];
@@ -311,7 +305,7 @@ void Matrix::insertBlock(Block gameBlock, int scol, int step)
                 }
             }
         }
-        currentRow += 1;
+        currentRow += 1; //cout << currentRow
         if(currentRow == trow) //check reach bottom row or not
         {
             reachBottom = true; //reach bottom row
@@ -324,8 +318,6 @@ void Matrix::insertBlock(Block gameBlock, int scol, int step)
     int out = gameBlock.row;
     bool finish = false;
     bool blank = false;
-    bool fail = false;
-
     while(now<=gameBlock.row && collision)
     {
         while(!blank)
@@ -360,7 +352,8 @@ void Matrix::insertBlock(Block gameBlock, int scol, int step)
             endgame = true;
             break;
         }
-
+        second_drop_1:;
+        bool fail = false;
         for(int j=0; j< gameBlock.column; j++)
         {
             new_matrix[now][scol+j] = matrix[now][scol+j] + gameBlock.block[now_row][j];
@@ -383,7 +376,7 @@ void Matrix::insertBlock(Block gameBlock, int scol, int step)
             int counter = 0;
             for(int j=0; j<gameBlock.column; j++)
             {
-                matrix[now][scol+j+step] = new_matrix[now][scol+j];
+                matrix[now][scol+j] = new_matrix[now][scol+j];
             }
 
             //delete
@@ -411,20 +404,27 @@ void Matrix::insertBlock(Block gameBlock, int scol, int step)
             }
             now_row -= 1;
             out -= 1;
-        }
+            }
         }
     }
     if(!endgame && !finish)
     {
-        if(collision)
+        if(!isMoved)
         {
-            for(int i=0; i<gameBlock.row; i++)
+            isMoved = true;
+            scol += step;
+            goto second_drop;
+        }
+        else{
+            if(collision)
             {
-                for(int j=0; j<gameBlock.column; j++)
+                for(int i=0; i<gameBlock.row; i++)
                 {
-                    matrix[currentRow-i][scol+j+step] = pre_matrix[currentRow-i][scol+j];
+                    for(int j=0; j<gameBlock.column; j++)
+                    {
+                        matrix[currentRow-i][scol+j] = pre_matrix[currentRow-i][scol+j];
                 }
-            }
+                }
         }
         else
         {
@@ -432,12 +432,10 @@ void Matrix::insertBlock(Block gameBlock, int scol, int step)
             {
                 for(int j=0; j<gameBlock.column; j++)
                 {
-                    matrix[currentRow-i][scol+j+step] = new_matrix[currentRow-i][scol+j];
+                    matrix[currentRow-i][scol+j] = new_matrix[currentRow-i][scol+j];
                 }
             }
         }
-
-
 
         int first_delete = 0;
         int total = 0;
@@ -491,8 +489,8 @@ void Matrix::insertBlock(Block gameBlock, int scol, int step)
                 }
             }
         }
-
     }
+}
 }
 
 
