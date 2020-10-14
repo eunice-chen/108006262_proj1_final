@@ -273,9 +273,14 @@ void Matrix::insertBlock(Block gameBlock, int scol, int step)
     int refRow = 3;   //blockRow是reference point的那一行
     bool reachBottom = false;
     bool collision = false;
+    bool isMoved = false;
     int new_matrix[trow][tcol];
     int pre_matrix[trow][tcol];
-
+    if(step == 0)
+    {
+        isMoved = true;
+    }
+    second_drop:;
     for(int i = 0; i < trow; i++) {
         for(int j = 0; j < tcol; j++) {
             new_matrix[i][j] = matrix[i][j];
@@ -285,11 +290,11 @@ void Matrix::insertBlock(Block gameBlock, int scol, int step)
 
     while(!reachBottom && !collision)
     {   //store pre_matrix的值傳到 new_matrix
-        for(int i=0; i<gameBlock.row; i++)
+        for(int i=0; i<trow; i++)
         {
-            for(int j=0; j<gameBlock.column; j++)
+            for(int j=0; j<tcol; j++)
             {
-                pre_matrix[currentRow-1-i][scol+j] = new_matrix[currentRow-1-i][scol+j];
+                pre_matrix[i][j] = new_matrix[i][j];
             }
         }
         //dropping from row 1
@@ -323,9 +328,11 @@ void Matrix::insertBlock(Block gameBlock, int scol, int step)
 
     while(now<=gameBlock.row && collision)
     {
-        for(int i=0; i<gameBlock.row && !blank; i++)
+        while(!blank)
         {
-            for(int j=0; j<gameBlock.column && !blank; j++)
+        for(int i=0; i<gameBlock.row; i++)
+        {
+            for(int j=0; j<gameBlock.column; j++)
             {
                 if(now-i == 0)
                 {
@@ -341,18 +348,19 @@ void Matrix::insertBlock(Block gameBlock, int scol, int step)
         }
         blank = true;
         checked:;
+        }
         if(out == 0)
         {
             finish = true;
             break;
         }
 
-       /* if(now<=0)
+       if(now<=0)
         {
             endgame = true;
             break;
         }
-*/
+
         for(int j=0; j< gameBlock.column; j++)
         {
             new_matrix[now][scol+j] = matrix[now][scol+j] + gameBlock.block[now_row][j];
@@ -365,6 +373,13 @@ void Matrix::insertBlock(Block gameBlock, int scol, int step)
         }
         if(!fail)
         {
+            if(!isMoved)
+            {
+                isMoved = true;
+                scol += step;
+                goto second_drop;
+            }
+            else{
             int counter = 0;
             for(int j=0; j<gameBlock.column; j++)
             {
@@ -396,6 +411,7 @@ void Matrix::insertBlock(Block gameBlock, int scol, int step)
             }
             now_row -= 1;
             out -= 1;
+        }
         }
     }
     if(!endgame && !finish)
