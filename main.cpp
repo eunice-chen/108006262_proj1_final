@@ -58,25 +58,21 @@ int main(int argc, char * argv[])
 {
     string symbol;
     int trow, tcol, step, scol;
-    ifstream inFile("mytest.txt");
-    //int count = 2;
+    ifstream inFile(argv[1]);
+    ofstream outFile;
     if(inFile.is_open())
     {
         inFile >> trow >> tcol;
         trow += 1;
         tcol += 1;
         Matrix m(trow, tcol);
-        //m.printMatrix();
         while(!inFile.eof() && !endgame)
         {
-            //count--;
             inFile >> symbol;
             inFile >> scol >> step;
             if(symbol == "End")
                 break;
             m.insertBlock(Block(symbol), scol, step);
-            //if(count==0) break;
-            //Block b(symbol);
         }
         inFile.close();
         m.printMatrix();
@@ -85,7 +81,25 @@ int main(int argc, char * argv[])
     {
         cout << "Cannot open file!" << endl;
     }
-
+    Matrix m(trow, tcol);
+    outFile.open("108006262_proj1_first.final");
+    if(outFile.is_open())
+    {
+        for(int i=1; i<trow; i++)
+        {
+            for(int j=1; j<tcol; j++)
+            {
+                outFile<<m.matrix[i][j];
+            }
+            outFile << endl;
+        }
+        outFile.close();
+    }
+    else
+    {
+        cout << "Cannot output data file" << endl;
+    }
+    return 0;
 }
 
 Block::Block(string symbol)
@@ -313,100 +327,7 @@ void Matrix::insertBlock(Block gameBlock, int scol, int step)
         }
         ended:;
     }
-    int now = currentRow;
-    int now_row = refRow;
-    int out = gameBlock.row;
     bool finish = false;
-    bool blank = false;
-    while(now<=gameBlock.row && collision)
-    {
-        while(!blank)
-        {
-        for(int i=0; i<gameBlock.row; i++)
-        {
-            for(int j=0; j<gameBlock.column; j++)
-            {
-                if(now-i == 0)
-                {
-                    blank = true;
-                    goto checked;
-                }
-                if(matrix[now-i][scol+j] + gameBlock.block[now_row-i][j] >=2)
-                {
-                    now -= 1;
-                    goto checked;
-                }
-            }
-        }
-        blank = true;
-        checked:;
-        }
-        if(out == 0)
-        {
-            finish = true;
-            break;
-        }
-
-       if(now<=0)
-        {
-            endgame = true;
-            break;
-        }
-        second_drop_1:;
-        bool fail = false;
-        for(int j=0; j< gameBlock.column; j++)
-        {
-            new_matrix[now][scol+j] = matrix[now][scol+j] + gameBlock.block[now_row][j];
-            if(new_matrix[now][scol+j] >= 2)
-            {
-                now -= 1;
-                fail = true;
-                break;
-            }
-        }
-        if(!fail)
-        {
-            if(!isMoved)
-            {
-                isMoved = true;
-                scol += step;
-                goto second_drop;
-            }
-            else{
-            int counter = 0;
-            for(int j=0; j<gameBlock.column; j++)
-            {
-                matrix[now][scol+j] = new_matrix[now][scol+j];
-            }
-
-            //delete
-            for(int j=1; j<tcol; j++)
-            {
-                if(matrix[now][j]==1) counter++ ;
-            }
-            if(counter == tcol-1)
-            {
-                for(int i=now; i>1; i--)
-                {
-                    for(int j=1; j<tcol; j++)
-                    {
-                        matrix[i][j] = matrix[i-1][j];
-                    }
-                }
-                for(int j=1; j<tcol; j++)
-                {
-                    matrix[1][j] = 0;
-                }
-            }
-            else
-            {
-                now -= 1;
-            }
-            now_row -= 1;
-            out -= 1;
-            }
-        }
-    }
     if(!endgame && !finish)
     {
         if(!isMoved)
