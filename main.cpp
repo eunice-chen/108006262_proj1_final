@@ -16,7 +16,7 @@ class Matrix
 {
 public:
     Matrix(int row=0, int column=0);
-    int **matrix;
+    int **matrix; //2D array
     void printMatrix();
     void insertBlock(Block gameBlock, int scol, int step);
     int trow, tcol;
@@ -53,7 +53,6 @@ void Matrix::printMatrix()
 }
 
 bool endgame = false;
-
 int main(int argc, char * argv[])
 {
     string symbol;
@@ -276,19 +275,14 @@ Block::Block(string symbol)
 void Matrix::insertBlock(Block gameBlock, int scol, int step)
 {
     int currentRow = gameBlock.row; //current是要被放的行
-    int refRow = 3;   //blockRow是reference point的那一行
-    bool reachBottom = false;
-    bool collision = false;
+    int refRow = 3;   //reference point的那一行
     bool isMoved = false;
     int new_matrix[trow][tcol];
     int pre_matrix[trow][tcol];
-    if(step == 0)
-    {
-        isMoved = true;
-    }
+
     second_drop:;
-    reachBottom = false;
-    collision = false;
+    bool reachBottom = false;
+    bool collision = false;
     for(int i = 0; i < trow; i++) {
         for(int j = 0; j < tcol; j++) {
             new_matrix[i][j] = matrix[i][j];
@@ -319,11 +313,15 @@ void Matrix::insertBlock(Block gameBlock, int scol, int step)
                 }
             }
         }
-        currentRow += 1; //cout << currentRow
+        currentRow += 1;
         if(currentRow == trow) //check reach bottom row or not
         {
-            reachBottom = true; //reach bottom row
+            reachBottom = true;
             currentRow -= 1;    //move up
+        }
+        if(currentRow <= 0)
+        {
+            endgame = true;
         }
         ended:;
     }
@@ -344,7 +342,7 @@ void Matrix::insertBlock(Block gameBlock, int scol, int step)
                     for(int j=0; j<gameBlock.column; j++)
                     {
                         matrix[currentRow-i][scol+j] = pre_matrix[currentRow-i][scol+j];
-                }
+                    }
                 }
         }
         else
@@ -357,7 +355,8 @@ void Matrix::insertBlock(Block gameBlock, int scol, int step)
                 }
             }
         }
-
+        }
+        //delete row full with 1
         int first_delete = 0;
         int total = 0;
         for(int i=0; i<gameBlock.row; i++)
@@ -369,7 +368,6 @@ void Matrix::insertBlock(Block gameBlock, int scol, int step)
                 {
                     count++;
                 }
-
             }
             if(count == tcol-1)
             {
@@ -392,11 +390,11 @@ void Matrix::insertBlock(Block gameBlock, int scol, int step)
                 bool del = false;
                 while(matrix[i][1] != -1)   continue;
                 for(int j = i-1; j>=1 && !del; j--)
-                {
+                {   //find the row that has 0 and 1
                     if(matrix[j][1] == -1)  continue;
                     for(int k=1; k<tcol; k++)
                     {
-                        matrix[i][k] = matrix[j][k];
+                        matrix[i][k] = matrix[j][k]; //swap the -1 row with the row that contain 0 or 1
                         matrix[j][k] = -1;
                         del = true;
                     }
@@ -406,12 +404,12 @@ void Matrix::insertBlock(Block gameBlock, int scol, int step)
             {
                 for(int j=1; j<tcol; j++)
                 {
-                    matrix[i][j] = 0;
+                    matrix[i][j] = 0; // set the delete roe to 0
                 }
             }
         }
     }
 }
-}
+
 
 
