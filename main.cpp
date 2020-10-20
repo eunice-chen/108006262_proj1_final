@@ -274,8 +274,8 @@ Block::Block(string symbol)
 
 void Matrix::insertBlock(Block gameBlock, int scol, int step)
 {
-    int currentRow = gameBlock.row; //current是要被放的行
-    int refRow = 3;   //reference point的那一行
+    int currentRow = gameBlock.row;
+    int refRow = 3;//current是要被放的行
     bool isMoved = false;
     int new_matrix[trow][tcol];
     int pre_matrix[trow][tcol];
@@ -283,12 +283,6 @@ void Matrix::insertBlock(Block gameBlock, int scol, int step)
     second_drop:;
     bool reachBottom = false;
     bool collision = false;
-    for(int i = 0; i < trow; i++) {
-        for(int j = 0; j < tcol; j++) {
-            new_matrix[i][j] = matrix[i][j];
-            pre_matrix[i][j] = matrix[i][j];
-        }
-    }
 
     while(!reachBottom && !collision)
     {   //store pre_matrix的值傳到 new_matrix
@@ -305,7 +299,7 @@ void Matrix::insertBlock(Block gameBlock, int scol, int step)
             for(int j=0; j<gameBlock.column; j++)
             {
                 new_matrix[currentRow-i][scol+j] = matrix[currentRow-i][scol+j] + gameBlock.block[refRow-i][j];
-                if(new_matrix[currentRow-i][scol+j] >= 2) // test有沒有block是相撞的
+                if(new_matrix[currentRow-i][scol+j] > 1) // test有沒有block是相撞的
                 {
                     collision = true;
                     currentRow -= 1; // move up
