@@ -57,9 +57,10 @@ int main(int argc, char * argv[])
 {
     string symbol;
     int trow, tcol, step, scol;
-    ifstream inFile(argv[1]);
+    ifstream inFile("test1.txt");
     ofstream outFile;
-    inFile.is_open();
+    if(inFile.is_open())
+    {
         inFile >> trow >> tcol;
         trow += 1;
         tcol += 1;
@@ -74,7 +75,12 @@ int main(int argc, char * argv[])
         }
         inFile.close();
         m.printMatrix();
-
+    }
+    else
+    {
+        cout << "Cannot open file!" << endl;
+    }
+    Matrix m(trow, tcol);
     outFile.open("108006262_proj1_first.final");
     if(outFile.is_open())
     {
@@ -268,8 +274,8 @@ Block::Block(string symbol)
 
 void Matrix::insertBlock(Block gameBlock, int scol, int step)
 {
-    int currentRow = gameBlock.row;
-    int refRow = 3; //gameBlock refrow
+    int currentRow = gameBlock.row; //current是要被放的行
+    int refRow = 3;   //reference point的那一行
     bool isMoved = false;
     int new_matrix[trow][tcol];
     int pre_matrix[trow][tcol];
@@ -277,6 +283,12 @@ void Matrix::insertBlock(Block gameBlock, int scol, int step)
     second_drop:;
     bool reachBottom = false;
     bool collision = false;
+    for(int i = 0; i < trow; i++) {
+        for(int j = 0; j < tcol; j++) {
+            new_matrix[i][j] = matrix[i][j];
+            pre_matrix[i][j] = matrix[i][j];
+        }
+    }
 
     while(!reachBottom && !collision)
     {   //store pre_matrix的值傳到 new_matrix
@@ -344,7 +356,7 @@ void Matrix::insertBlock(Block gameBlock, int scol, int step)
             }
         }
         }
-        //delete row
+        //delete row full with 1
         int first_delete = 0;
         int total = 0;
         for(int i=0; i<gameBlock.row; i++)
@@ -361,7 +373,7 @@ void Matrix::insertBlock(Block gameBlock, int scol, int step)
             {
                 for(int j=1; j< tcol; j++)
                 {
-                    matrix[currentRow-i][j] = -1; //set the delete dow to -1
+                    matrix[currentRow-i][j] = -1;
                 }
                 if(first_delete == 0)
                 {
@@ -376,14 +388,13 @@ void Matrix::insertBlock(Block gameBlock, int scol, int step)
             for(int i=first_delete; i>=1; i--)
             {
                 bool del = false;
-                //find row that is all -1
                 while(matrix[i][1] != -1)   continue;
                 for(int j = i-1; j>=1 && !del; j--)
                 {   //find the row that has 0 and 1
                     if(matrix[j][1] == -1)  continue;
                     for(int k=1; k<tcol; k++)
                     {
-                        matrix[i][k] = matrix[j][k]; //change
+                        matrix[i][k] = matrix[j][k]; //swap the -1 row with the row that contain 0 or 1
                         matrix[j][k] = -1;
                         del = true;
                     }
@@ -393,7 +404,7 @@ void Matrix::insertBlock(Block gameBlock, int scol, int step)
             {
                 for(int j=1; j<tcol; j++)
                 {
-                    matrix[i][j] = 0; // set -1 to 0
+                    matrix[i][j] = 0; // set the delete roe to 0
                 }
             }
         }
