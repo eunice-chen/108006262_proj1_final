@@ -73,9 +73,8 @@ int main(int argc, char * argv[])
             m.insertBlock(Block(symbol), scol, step);
         }
         inFile.close();
-        m.printMatrix();
 
-    outFile.open("108006262_proj1_first.final");
+    outFile.open("108006262_proj1_final.final");
     if(outFile.is_open())
     {
         for(int i=1; i<trow; i++)
