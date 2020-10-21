@@ -57,10 +57,9 @@ int main(int argc, char * argv[])
 {
     string symbol;
     int trow, tcol, step, scol;
-    ifstream inFile("test1.txt");
+    ifstream inFile(argv[1]);
     ofstream outFile;
-    if(inFile.is_open())
-    {
+    inFile.is_open();
         inFile >> trow >> tcol;
         trow += 1;
         tcol += 1;
@@ -74,13 +73,7 @@ int main(int argc, char * argv[])
             m.insertBlock(Block(symbol), scol, step);
         }
         inFile.close();
-        m.printMatrix();
-    }
-    else
-    {
-        cout << "Cannot open file!" << endl;
-    }
-    Matrix m(trow, tcol);
+
     outFile.open("108006262_proj1_first.final");
     if(outFile.is_open())
     {
@@ -100,7 +93,6 @@ int main(int argc, char * argv[])
     }
     return 0;
 }
-
 Block::Block(string symbol)
 {
     for(int i=0; i<4; i++)
