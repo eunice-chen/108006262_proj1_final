@@ -74,14 +74,14 @@ int main(int argc, char * argv[])
         }
         inFile.close();
 
-    outFile.open("108006262_proj1_final.final");
+    outFile.open("108006262_proj1.final");
     if(outFile.is_open())
     {
         for(int i=1; i<trow; i++)
         {
             for(int j=1; j<tcol; j++)
             {
-                outFile<<m.matrix[i][j];
+                outFile<<m.matrix[i][j] << " ";
             }
             outFile << endl;
         }
